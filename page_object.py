@@ -31,6 +31,8 @@ class MainPage(Page):
     @property
     def top_menu(self):
         return TopMenu(self.driver)
+    def create_form(self):
+        return CreateForm(self.driver)
 
 
 class CreatePage(Page):
