@@ -38,7 +38,7 @@ class TestWithAuth(Test):
         self.LINK_ADDR = self.createRandomText('bla_bla_bla.com')
         self.LINK_TEXT = self.createRandomText('great web cite ')
         self.USER_ADD = u'Котегов'
-        self.PATH_TO_PIC = '/home/serg/1-7515585-5807031.jpg'
+        self.PATH_TO_PIC = '1-7515585-5807031.jpg'
         self.PIC_URL = 'fc07.deviantart.net/fs70/f/2013/209/7/a/have_a_nice_day_by_slawa-d6elhdw.jpg'
 
         USEREMAIL = 'ftest12@tech-mail.ru'

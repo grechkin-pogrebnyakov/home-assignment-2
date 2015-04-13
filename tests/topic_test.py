@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from page_object import *
+from page_object import CreatePage, TopicPage, BlogPage, MainPage
 
 from basic_test import TestWithAuth, BasicTest
 
@@ -288,7 +288,7 @@ class TopicMainTestCase(BasicTest):
         self.assertEqual(self.TITLE, topic_title)
         self.assertIn(expected_text, topic_text)
 
-    def testMarkQuote(self):
+    def testMarkQuoteBySelectAll(self):
         create_page = CreatePage(self.driver)
         create_page.open()
 
@@ -299,6 +299,34 @@ class TopicMainTestCase(BasicTest):
         create_form.set_main_text(self.MAIN_TEXT)
         create_form.select_all_text()
         create_form.mark_quote()
+        create_form.submit()
+
+        topic_page = TopicPage(self.driver)
+        topic_title = topic_page.topic.get_title()
+        topic_text = topic_page.topic.get_text()
+        expected_text = '<blockquote>'+self.MAIN_TEXT+'</blockquote>'
+        self.assertEqual(self.TITLE, topic_title)
+        self.assertIn(expected_text, topic_text)
+
+        topic_page.topic.open_blog()
+
+        blog_page = BlogPage(self.driver)
+        topic_title = blog_page.topic.get_title()
+        topic_text = blog_page.topic.get_text()
+        self.assertEqual(self.TITLE, topic_title)
+        self.assertIn(expected_text, topic_text)
+
+
+    def testMarkQuote(self):
+        create_page = CreatePage(self.driver)
+        create_page.open()
+
+        create_form = create_page.form
+        create_form.blog_select_open()
+        create_form.blog_select_set_option(self.BLOG)
+        create_form.set_title(self.TITLE)
+        create_form.mark_quote()
+        create_form.set_main_text(self.MAIN_TEXT)
         create_form.submit()
 
         topic_page = TopicPage(self.driver)
@@ -463,7 +491,8 @@ class TopicMainTestCase(BasicTest):
         create_form.submit()
 
         topic_page = TopicPage(self.driver)
-        self.assertTrue(topic_page.topic.has_picture())
+        picture = topic_page.topic.get_picture()
+        self.assertIsNotNone(picture)
 
     def testAddPictureLeft(self):
         create_page = CreatePage(self.driver)
@@ -477,7 +506,9 @@ class TopicMainTestCase(BasicTest):
         create_form.submit()
 
         topic_page = TopicPage(self.driver)
-        self.assertTrue(topic_page.topic.has_picture(align='left'))
+        picture = topic_page.topic.get_picture()
+        self.assertIsNotNone(picture)
+        self.assertEqual('left', picture.get_attribute('align'))
 
     def testAddPictureRight(self):
         create_page = CreatePage(self.driver)
@@ -491,7 +522,9 @@ class TopicMainTestCase(BasicTest):
         create_form.submit()
 
         topic_page = TopicPage(self.driver)
-        self.assertTrue(topic_page.topic.has_picture(align='right'))
+        picture = topic_page.topic.get_picture()
+        self.assertIsNotNone(picture)
+        self.assertEqual('right', picture.get_attribute('align'))
 
     def testAddPictureCenter(self):
         create_page = CreatePage(self.driver)
@@ -505,7 +538,9 @@ class TopicMainTestCase(BasicTest):
         create_form.submit()
 
         topic_page = TopicPage(self.driver)
-        self.assertTrue(topic_page.topic.has_picture(align='center'))
+        picture = topic_page.topic.get_picture()
+        self.assertIsNotNone(picture)
+        self.assertEqual('center', picture.get_attribute('align'))
 
     def testAddPictureWithText(self):
         create_page = CreatePage(self.driver)
@@ -519,7 +554,9 @@ class TopicMainTestCase(BasicTest):
         create_form.submit()
 
         topic_page = TopicPage(self.driver)
-        self.assertTrue(topic_page.topic.has_picture(text=img_title))
+        picture = topic_page.topic.get_picture()
+        self.assertIsNotNone(picture)
+        self.assertEqual(img_title, picture.get_attribute('title'))
 
     def testAddPictureByUrl_Upload(self):
         create_page = CreatePage(self.driver)
@@ -532,7 +569,8 @@ class TopicMainTestCase(BasicTest):
         create_form.submit()
 
         topic_page = TopicPage(self.driver)
-        self.assertTrue(topic_page.topic.has_picture())
+        picture = topic_page.topic.get_picture()
+        self.assertIsNotNone(picture)
 
     def testAddPictureByUrl_Link(self):
         create_page = CreatePage(self.driver)
@@ -545,7 +583,8 @@ class TopicMainTestCase(BasicTest):
         create_form.submit()
 
         topic_page = TopicPage(self.driver)
-        self.assertTrue(topic_page.topic.has_picture())
+        picture = topic_page.topic.get_picture()
+        self.assertIsNotNone(picture)
 
     def testDraft(self):
         create_page = CreatePage(self.driver)
@@ -578,20 +617,20 @@ class TopicMainTestCase(BasicTest):
         self.assertTrue(topic_page.topic.are_comments_disabled())
 
 # this test checks nothing: polls are broken at the forum
-    def testAddPoll(self):
-        create_page = CreatePage(self.driver)
-        create_page.open()
-
-        create_form = create_page.form
-        create_form.blog_select_open()
-        create_form.blog_select_set_option(self.BLOG)
-        create_form.set_title(self.TITLE)
-        create_form.set_main_text(self.MAIN_TEXT)
-        create_form.add_poll('dsgg',['gfsdgdf','sdgsdg'])
-        create_form.submit()
-
-        topic_page = TopicPage(self.driver)
-        self.assertTrue(topic_page.topic.is_poll_exist())
+#     def testAddPoll(self):
+#         create_page = CreatePage(self.driver)
+#         create_page.open()
+#
+#         create_form = create_page.form
+#         create_form.blog_select_open()
+#         create_form.blog_select_set_option(self.BLOG)
+#         create_form.set_title(self.TITLE)
+#         create_form.set_main_text(self.MAIN_TEXT)
+#         create_form.add_poll('dsgg',['gfsdgdf','sdgsdg'])
+#         create_form.submit()
+#
+#         topic_page = TopicPage(self.driver)
+#         self.assertTrue(topic_page.topic.is_poll_exist())
 
     def testAddTopicByClicks(self):
         main_page = MainPage(self.driver)

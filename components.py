@@ -55,7 +55,6 @@ class TopMenu(Component):
         self.driver.find_element_by_xpath(self.CREATE_TOPIC_BUTTON).click()
 
 
-
 class CreateForm(Component):
     BLOGSELECT = '//a[@class="chzn-single"]'
     OPTION = '//li[text()="{}"]'
@@ -63,22 +62,22 @@ class CreateForm(Component):
     TEXT = '//textarea[@id="id_text"]'
     CREATE_BUTTON = '//button[contains(text(),"Создать")]'
     ERROR_MSG = '//ul[@class="system-message-error"]'
-    H4_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[1]/a'
-    H5_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[2]/a'
-    H6_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[3]/a'
-    BOLD_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[5]/a'
-    ITALIC_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[6]/a'
-    STROKE_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[7]/a'
-    UNDERLINE_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[8]/a'
-    QUOTE_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[9]/a'
-    CODE_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[10]/a'
-    UL_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[12]/a'
-    OL_MARK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[13]/a'
-    ADD_LINK = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[16]/a'
-    ADD_USER = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[17]/a'
+    H4_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-h4")]/a'
+    H5_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-h5")]/a'
+    H6_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-h6")]/a'
+    BOLD_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-bold")]/a'
+    ITALIC_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-italic")]/a'
+    STROKE_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-stroke")]/a'
+    UNDERLINE_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-underline")]/a'
+    QUOTE_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-quote")]/a'
+    CODE_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-code")]/a'
+    UL_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-ul")]/a'
+    OL_MARK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-ol")]/a'
+    ADD_LINK = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-link")]/a'
+    ADD_USER = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-user")]/a'
     USER_INPUT = '//input[@id="search-user-login-popup"]'
     USER_CHOOSE = '//*[@id="list-body"]/tr[1]/td/div/p[2]/a'
-    ADD_PICTURE = '//*[@id="markItUpId_text"]/div/div[1]/ul/li[15]/a'
+    ADD_PICTURE = '//*[@id="markItUpId_text"]//li[contains(@class,"editor-picture")]/a'
     PICTURE_PATH_SELECTOR = '//input[@id="img_file"]'
     PICTURE_URL_SELECTOR = '//input[@id="img_url"]'
     PICTURE_SUBMIT = '//button[@id="submit-image-upload"]'
@@ -102,10 +101,10 @@ class CreateForm(Component):
     def blog_select_set_option(self, option_text):
         self.driver.find_element_by_xpath(self.OPTION.format(option_text)).click()
 
-    def set_title(self,title):
+    def set_title(self, title):
         self.driver.find_element_by_xpath(self.TITLE).send_keys(title)
 
-    def set_main_text(self,main_text):
+    def set_main_text(self, main_text):
         self.driver.find_element_by_xpath(self.TEXT).send_keys(main_text)
 
     def submit(self):
@@ -116,8 +115,9 @@ class CreateForm(Component):
         return WebDriverWait(self.driver, 30, 0.1).until(
             lambda d: d.find_element_by_xpath(self.ERROR_MSG).text
         )
+
     def select_all_text(self):
-        ActionChains(self.driver).key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL).perform()
+        ActionChains(self.driver).key_down(Keys.LEFT_SHIFT).send_keys(Keys.HOME).key_up(Keys.LEFT_SHIFT).perform()
 
     def mark_h4(self):
         self.driver.find_element_by_xpath(self.H4_MARK).click()
@@ -253,19 +253,11 @@ class Topic(Component):
         except NoSuchElementException:
             pass
 
-    def has_picture(self, align=None, text=None):
+    def get_picture(self):
         try:
-            image = self.driver.find_element_by_xpath(self.IMAGE_TAG)
-            if image.is_enabled():
-                result = True
-                if align:
-                    result = (align == image.get_attribute('align'))
-                if result and text:
-                    result = (text == image.get_attribute('title'))
-                return result
-            return False
+            return self.driver.find_element_by_xpath(self.IMAGE_TAG)
         except NoSuchElementException:
-            return False
+            return None
 
     def is_draft(self):
         try:

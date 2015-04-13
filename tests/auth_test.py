@@ -4,7 +4,7 @@ import os
 from tests.basic_test import TestWithAuth
 
 
-from page_object import *
+from page_object import MainPage
 
 __author__ = 'serg'
 
